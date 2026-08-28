@@ -13,6 +13,9 @@
 .main-menu-container button .mat-icon {
   fill: white !important;
 }
+nde-top-bar {
+  border-bottom: none !important;
+}
 nde-logo img {
   height: 41px !important;
 }
