@@ -52,9 +52,14 @@ export class StackMapComponent implements OnInit, AfterViewInit {
   }
 
   hasMessage(value: ICBlob | ICLocation | undefined): value is ICBlob {
-    // test if something is an ICBlob
+    // ICBlob means a fixed location, not mapped to stack face
     return !!value && 'message' in value;
   }
+
+  /**
+   * Stack faces are designated by triplets like G.31.e, meaning
+   * General stacks, stack 31, east face.
+   */
 
   get floor(): string | undefined {
     if (!this.result) return undefined;
@@ -88,13 +93,19 @@ export class StackMapComponent implements OnInit, AfterViewInit {
   private findLocation(callNumber: string): ICLocation | undefined {
     const normalizedCallNumber = normalizeLC(callNumber);
     if (!normalizedCallNumber) {
-      // console.warn(`Could not normalize call number: ${callNumber}`);
       return undefined;
     }
-    let datasource =
+    // Call numbers starting with M are music books, which are shelved
+    // on the third floor outside of the main call number sequence
+    const datasource =
       normalizedCallNumber.slice(0, 1) === 'M'
         ? stackMapDataMusic
         : stackMapDataGeneral;
+    /**
+     *  sortLC() returns the three call numbers in LC order with duplicates
+     *  removed: if callNumber lands in the middle slot it's between the
+     *  endpoints, and if only two remain it's identical to one of them.
+     */
     for (const entry of datasource) {
       const test = sortLC(entry.start, entry.end, callNumber);
       if (normalizeLC(test[1]) === normalizedCallNumber || test.length === 2) {
@@ -119,9 +130,8 @@ export class StackMapComponent implements OnInit, AfterViewInit {
     const ctx = this.overlayRef.nativeElement.getContext('2d');
     if (!ctx) return;
     const scale = 2;
-    ctx.clearRect(0, 0, 1200, 704);
+    ctx.clearRect(0, 0, 1200, 704); // canvas size
     ctx.fillStyle = 'fuchsia';
-    ctx.lineWidth = 4;
     ctx.globalAlpha = 0.6;
     ctx.fillRect(
       loc.x * scale,
