@@ -1,5 +1,8 @@
 import { sprintf } from "./sprintf.js";
 
+// Attribution: This code is based on Perl functions written by Michael
+// Doran at UT Austin.
+
 // Known limitation: a bare digit sequence with no cutter letter (e.g. a
 // trailing year range like "2000-2001" without a preceding cutter) can get
 // misparsed into cutter_2_number by the main regex above, splitting it from
